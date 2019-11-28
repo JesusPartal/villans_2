@@ -1,9 +1,11 @@
 package model;
 
+import java.io.Serializable;
 import java.util.Random;
 
-public class SuperVillain extends SuperThing {
+public class SuperVillain extends SuperThing implements Serializable {
 
+	private static final long serialVersionUID = 1L;
 	private int badnessPower;
 	
 	public SuperVillain() {
@@ -14,11 +16,5 @@ public class SuperVillain extends SuperThing {
 	
 	public int getBadnessPower() {
 		return badnessPower;
-	}
-	
-	@Override
-	public String getStats() {
-		return "Health Poinst: " + this.getHealthPoints() +
-				" - Badnesspower Points:" + this.getBadnessPower();
 	}
 }

@@ -19,7 +19,6 @@ public class FileStorageController implements Serializable {
 	private  int fileNumber;
 	
 	public FileStorageController() {
-		
 		getFileNumber();
 	}
 	
@@ -55,7 +54,7 @@ public class FileStorageController implements Serializable {
 			savedFile.getParentFile().mkdir();
 		
 		try {
-			System.out.println("saving "  + savePath);
+			System.out.println("saving to "  + savePath);
 			storeObject(villain, savePath);
 		} catch (Exception errorWritingToFile){
 			System.out.println("Error while writing file...");

@@ -1,54 +1,39 @@
 package application;
 
-import java.util.Random;
-import model.Person;
-import model.SuperVillain;
-import model.VillainFactory;
-import model.enums.VillainType;
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.List;
 
-public class ThreadApp extends Thread {
+import threads.ThreadVillainsGenerator1;
+
+public class ThreadApp implements SubAppInterface{
 	
-	private int cadency, spawns;
+	private List<Integer> spawns;
+	private int cadency;
 	
-	public ThreadApp(int cadency, int spawns) {
+	public ThreadApp(int cadency, List<Integer> spawns) throws UnknownHostException, IOException {
+		System.out.println("Launching Sub Application 1");
 		this.cadency = cadency;
 		this.spawns = spawns;
 	}
+
 	
 	@Override
-	public void run() {
-		boolean isVillain;
+	public void runSubApp() throws InterruptedException {
+		System.out.println("Launching Thread-0 and Thread-1");
+		ThreadVillainsGenerator1 t1 = new ThreadVillainsGenerator1(cadency, spawns.get(0));
+		ThreadVillainsGenerator1 t2 = new ThreadVillainsGenerator1(cadency, spawns.get(1));
 		
-		for (int i = 0; i <= spawns; i++) {
-			try {
-				isVillain = getRandomBoolean();
-				Person newPerson = generatePerson(isVillain);
-				System.out.println(newPerson.getClass().getName() 
-						+ " --- "
-						+ newPerson.getStats());
-				Thread.sleep(cadency);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		t1.setPriority(1);
+		t2.setPriority(10);
+		
+		t1.join();
+		t2.join();
+		
+		t1.start();
+		t2.start();
 	}
-	
-	public Person generatePerson(boolean isVillain) {
-		if (isVillain) {
-			boolean isStrong = getRandomBoolean();
-			SuperVillain superVillain = (isStrong) 
-					? VillainFactory.buildVillain(VillainType.BADSTRONGMAN) 
-							: VillainFactory.buildVillain(VillainType.BADFLYPERSON);
-			// TODO save to file
-			return superVillain;
-		} else {
-			return new Person();
-		}
-	}
-	
-	public boolean getRandomBoolean() {
-		Random random = new Random();
-		return random.nextBoolean();
-	}
+
 }
 
+;

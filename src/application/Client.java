@@ -1,15 +1,30 @@
 package application;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Scanner;
 
-public class Main {
-	public static void main(String[] args) {
-
+public class Client {
+	private static int cadency, spawns;
+	private static SubAppInterface subApp;
+	private static int port = 8000;
+	private static String host = "127.0.0.1";
+	DataInputStream in;
+	DataOutputStream out;
+	public static Socket socket;
+	
+	public static void main(String[] args) throws InterruptedException, UnknownHostException, IOException {
+		
 		Scanner scanChoice = new Scanner(System.in);
 		int choiceInput = -1;
-		int cadency = -1;
-		int spawns = -1;
-		
+		socket = new Socket(host, port);
+		System.out.println("Connecting to: " + host + ":" + port);
+
 		System.out.println("Welcome to Villain Generator 2.0\n");
 		System.out.println("Please select the app functionality you want to try:");
 		System.out.println("----------------------------------------------------");
@@ -19,16 +34,21 @@ public class Main {
 		System.out.println("\t4. Using synchronization; synchronization keyword and using locks");
 		System.out.println("\t5. Using await(), singal(), and singalall()");
 		System.out.println("\n\t0. Exit application");
-		
+		System.out.println("----------------------------------------------------\n");
+
 		choiceInput = integerValidatorWithMessage(scanChoice, 0, 5, "Please select your choice (0-5)> ");
 		
 		switch(choiceInput){
 			case 0:
 				System.out.println("Bye!");
+				scanChoice.close();
 				System.exit(0);
 				break;
 	        case 1:
 	            System.out.println("Case " + choiceInput);
+	            getSpawnAndCadency(scanChoice);
+	            subApp = (SubAppInterface) new ThreadApp(cadency, integerDividedByTwo(spawns));
+	            subApp.runSubApp();
 	            break;
 	        case 2:
 	        	System.out.println("Case " + choiceInput);
@@ -43,11 +63,25 @@ public class Main {
 	        	System.out.println("Case " + choiceInput);
 	            break;
 		}
-		
-		cadency = integerValidatorWithMessage(scanChoice, 1, 30, "Please select the cadency (time in seconds between spawns (1-30): ");
-		spawns = integerValidatorWithMessage(scanChoice, 1, 100, "Please select number of spawns (1-100):");
-           
+
 		scanChoice.close();
+	}
+
+	
+	public void createSocket() {
+		try {
+			socket = new Socket(host, port);
+			
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public static void getSpawnAndCadency(Scanner scanChoice) {
+		cadency = integerValidatorWithMessage(scanChoice, 1, 30, "Please select the cadency (time in seconds between spawns (1-30)>") * 1000;
+		spawns = integerValidatorWithMessage(scanChoice, 1, 100, "Please select number of spawns (1-100)> ");
 	}
 	
 	/**
@@ -77,5 +111,11 @@ public class Main {
 			}			
 		} while (!validated);
 		return intValidated;
+	}
+	
+	public static List<Integer> integerDividedByTwo(int a) {
+		if (a % 2 == 0)
+			return Arrays.asList(a/2, a/2);
+		return Arrays.asList(a/2 + 1, a/2);
 	}
 }
